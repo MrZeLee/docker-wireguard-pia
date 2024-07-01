@@ -30,7 +30,7 @@ jobs:
       -
         name: Login to DockerHub
         uses: docker/login-action@v3
-        if: github.repository_owner == 'thrnz'
+        if: github.repository_owner == 'MrZeLee'
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -47,9 +47,7 @@ jobs:
         id: docker-meta
         uses: docker/metadata-action@v5
         with:
-          images: |
-            thrnz/docker-wireguard-pia
-            ghcr.io/${{ github.repository }}
+          images: MrZeLee/docker-wireguard-pia
           tags: |
             # Tag branches with branch name, but disable for default branch
             type=ref,event=branch,enable=${{ github.ref_name != 'master' }}
@@ -66,7 +64,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           platforms: linux/amd64,linux/arm,linux/arm64
-          push: ${{ github.repository_owner == 'thrnz' }}
+          push: ${{ github.repository_owner == 'MrZeLee' }}
           tags: ${{ steps.docker-meta.outputs.tags }}
           build-args: |
             BUILDINFO="${{ github.ref_name }} ${{ env.SHA_TRIMMED }} ${{ env.BUILD_DATE }}"
