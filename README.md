@@ -1,5 +1,5 @@
 # docker-wireguard-pia
-,
+
 A Docker container for using WireGuard with PIA.
 
 ## Requirements
