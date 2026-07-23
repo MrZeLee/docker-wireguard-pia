@@ -56,6 +56,10 @@ firewall_init () {
   iptables -P FORWARD DROP &> /dev/null
 
   # Allow loopback traffic and input for established connections
+  # (IPv6 too: dropping ::1 silently hangs apps that try localhost over IPv6
+  # before falling back to 127.0.0.1, e.g. selenium -> chromedriver)
+  ip6tables -A OUTPUT -o lo -j ACCEPT &> /dev/null
+  ip6tables -A INPUT -i lo -j ACCEPT &> /dev/null
   iptables -A OUTPUT -o lo -j ACCEPT
   iptables -A INPUT -i lo -j ACCEPT
   iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
