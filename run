@@ -423,6 +423,16 @@ gen_configs
 [ "${VPNDNS}" != "0" ] && resolvconf -u
 
 echo "Bringing up WireGuard interface wg0"
+# Remove any stale LOCAL_NETWORK rules left by a previous run sharing this
+# netns (eg a restarted container in a Kubernetes pod). If present before
+# wg-quick up, wg-quick's auto-assigned rule prefs land BELOW ours (9/8 vs 10)
+# and LOCAL_NETWORK traffic gets routed into the tunnel instead.
+if [ -n "$LOCAL_NETWORK" ]; then
+  for range in ${LOCAL_NETWORK//,/ }; do
+    while ip -4 rule del to "$range" lookup main pref 10 2> /dev/null; do :; done
+  done
+fi
+
 if ! wg-quick up wg0; then
   echo "If the host is missing iptables modules required by wg-quick, running with the ALLOW_MISSING_IPTABLES_RULES=1 env var set will treat this as a non-fatal error. See the README for more info."
   fatal_error
